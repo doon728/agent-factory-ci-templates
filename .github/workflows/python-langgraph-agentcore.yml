@@ -26,6 +26,13 @@ jobs:
 
       - name: Run Ruff lint
         run: |
+
+       - name: Run tests
+        env:
+          PYTHONPATH: .
+        run: |
+          poetry run pytest
+
           poetry run ruff check .
 
       - name: Run tests
