@@ -32,6 +32,19 @@ jobs:
         working-directory: ${{ matrix.service.path }}
         run: |
           poetry run python -c "import yaml; print(yaml.__version__)"
+      - name: Comprehensive PyYAML Diagnostics
+        working-directory: ${{ matrix.service.path }}
+        run: |
+          echo "Python Executable:"
+          poetry run which python
+          echo "Python Version:"
+          poetry run python --version
+          echo "Python Path:"
+          poetry run python -c "import sys; print('\n'.join(sys.path))"
+          echo "Installed Packages:"
+          poetry run pip list | grep PyYAML
+          echo "Attempting Import Diagnostics:"
+          poetry run python -c "import sys, importlib; print('Sys Path:', sys.path); try: import yaml; print('✅ PyYAML imported successfully'); print('Version:', yaml.__version__); print('Location:', yaml.__file__) except ImportError as e: print(f'❌ Import Error: {e}'); spec = importlib.util.find_spec('yaml'); print('Import Spec:', spec)"
       - name: Lint
         working-directory: ${{ matrix.service.path }}
         run: poetry run ruff check .
