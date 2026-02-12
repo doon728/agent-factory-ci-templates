@@ -27,26 +27,24 @@ jobs:
         working-directory: ${{ matrix.service.path }}
         run: |
           poetry install --no-root
-          poetry run pip install pyyaml  # Use pip to ensure installation
+          poetry run pip install pyyaml
       - name: Comprehensive PyYAML Diagnostics
         working-directory: ${{ matrix.service.path }}
-        run: |
+        run: >
           poetry run python -c "
-import sys
-import importlib
-
-print('Sys Path:', sys.path)
-try:
-    import yaml
-    print('✅ PyYAML imported successfully')
-    print('Version:', yaml.__version__)
-    print('Location:', yaml.__file__)
-except ImportError as e:
-    print(f'❌ Import Error: {e}')
-
-spec = importlib.util.find_spec('yaml')
-print('Import Spec:', spec)
-"
+          import sys
+          import importlib
+          print('Sys Path:', sys.path)
+          try:
+              import yaml
+              print('✅ PyYAML imported successfully')
+              print('Version:', yaml.__version__)
+              print('Location:', yaml.__file__)
+          except ImportError as e:
+              print(f'❌ Import Error: {e}')
+          spec = importlib.util.find_spec('yaml')
+          print('Import Spec:', spec)
+          "
       - name: Lint
         working-directory: ${{ matrix.service.path }}
         run: poetry run ruff check .
