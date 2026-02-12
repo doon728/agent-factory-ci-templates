@@ -2,6 +2,12 @@ name: python-agent-tools-ci
 
 on:
   workflow_call:
+    inputs:
+      push_images:
+        description: "Push images to GHCR?"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   ci:
@@ -32,7 +38,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ matrix.service.path }}
-        run: poetry install
+        run: poetry install --no-interaction --no-ansi
 
       - name: Lint
         working-directory: ${{ matrix.service.path }}
@@ -50,14 +56,17 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE=ghcr.io/${{ github.repository }}-${{ matrix.service.name }}
-          docker build -t $IMAGE:latest ${{ matrix.service.path }}
+          docker build \
+            -t $IMAGE:latest \
+            -f ${{ matrix.service.path }}/Dockerfile \
+            ${{ matrix.service.path }}
 
       - name: Log in to GHCR
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.repository, 'doon728/tmpl-')
+        if: inputs.push_images == true
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Docker image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.repository, 'doon728/tmpl-')
+        if: inputs.push_images == true
         run: |
           IMAGE=ghcr.io/${{ github.repository }}-${{ matrix.service.name }}
           docker push $IMAGE:latest
