@@ -54,3 +54,7 @@ jobs:
         run: |
           IMAGE=ghcr.io/${{ github.repository }}-${{ matrix.service.name }}
           docker push $IMAGE:latest
+      - name: Debug PyYAML Import
+        working-directory: services/agent-runtime
+        run: |
+          poetry run python -c "import os, sys, importlib.util; print('Python Path:', sys.path); print('Attempting to import yaml...'); import yaml; print('✅ PyYAML imported successfully'); print('Location:', yaml.__file__)"
