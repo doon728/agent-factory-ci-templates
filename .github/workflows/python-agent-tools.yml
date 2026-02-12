@@ -55,5 +55,10 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !startsWith(github.repository, 'doon728/tmpl-')
         run: |
           IMAGE=ghcr.io/${{ github.repository }}-${{ matrix.service.name }}
-          docker push $IMAGE:latest
+
+      - name: Test Configuration Loading
+        working-directory: services/agent-runtime
+        run: |
+          poetry run python tests/test_config_manual.py
+                docker push $IMAGE:latest
 
